@@ -667,6 +667,15 @@ spec:
       for: 15m
       labels:
         severity: critical
+    - alert: KubeOOMWarning
+      annotations:
+        message: Pod {{ $labels.namespace }}/{{ $labels.pod }} container
+          {{ $labels.container}} has been OOM killed.
+      expr: |
+        sum by (namespace, pod, container) (kube_pod_container_status_last_terminated_reason{reason="OOMKilled",job="kube-state-metrics"}) > 0
+      for: 1m
+      labels:
+        severity: warning
     - alert: KubeContainerWaiting
       annotations:
         message: Pod {{ $labels.namespace }}/{{ $labels.pod }} container {{ $labels.container}}
